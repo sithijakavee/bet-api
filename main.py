@@ -61,16 +61,18 @@ async def register(register: models.Register):
 async def login(login: models.Login):
     cursor = db.cursor()
 
-    sql = "SELECT password FROM users WHERE email = %s"
+    sql = "SELECT userid, password FROM users WHERE email = %s"
     val = (login.email,)
     cursor.execute(sql, val)
-
+    data = []
     result = cursor.fetchall()
 
     if result:
         # return result
-        if result[0][0] == login.password:
-            return "success"
+        if result[0][1] == login.password:
+            data.append({"userid" : result[0][0]})
+            data.append({"status" : "success"})
+            return data
         else:
             return "Wrong Email or Password!"
     else:
