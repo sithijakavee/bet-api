@@ -6,3 +6,10 @@ db = mysql.connector.connect(
   password="20030609s",
   database="bet_db"
 )
+
+# db = mysql.connector.connect(
+#   host="localhost",
+#   user="root",
+#   password="",
+#   database="bet_db"
+# )

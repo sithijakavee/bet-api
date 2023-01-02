@@ -24,7 +24,7 @@ app.add_middleware(
 
 @app.get("/")
 async def root():
-    return {"message": "Hello World"}
+    return {"message": "Bet Api"}
 
 
 @app.post("/register")
@@ -81,3 +81,22 @@ async def login(login: models.Login):
         data["status"] = "Wrong Email or Password!"
         return data
 
+# @app.get("/get_live_events_by_league_id")
+# def get_live_events_by_league_id():
+#     url = ''
+
+@app.post("/post_bet")
+async def post_bet(bet: models.Bet):
+    cursor = db.cursor()
+
+    betid = uuid.uuid1()
+    betid = str(betid)
+
+    sql = "INSERT INTO bets (userid, username, betid, bet_amount, bet_event, bet_sport, bets) VALUES (%s, %s, %s, %s, %s, %s, %s)"
+    val = (bet.userid, bet.username, betid, bet.bet_amount, bet.bet_event, bet.bet_sport, bet.bets)
+
+    cursor.execute(sql, val)
+
+    db.commit()
+
+    return "success"

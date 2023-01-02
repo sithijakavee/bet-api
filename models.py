@@ -13,3 +13,11 @@ class Login(BaseModel):
 
 class User(BaseModel):
     id: str
+
+class Bet(BaseModel):
+    userid : str
+    username : str
+    bet_amount : str
+    bet_event : str
+    bet_sport : str
+    bets : str
