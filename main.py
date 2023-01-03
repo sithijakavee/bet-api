@@ -61,7 +61,7 @@ async def register(register: models.Register):
 async def login(login: models.Login):
     cursor = db.cursor()
 
-    sql = "SELECT userid, password, username FROM users WHERE email = %s"
+    sql = "SELECT userid, password, username, status FROM users WHERE email = %s"
     val = (login.email,)
     cursor.execute(sql, val)
     data = {}
@@ -73,6 +73,7 @@ async def login(login: models.Login):
             data["status"] = "success"
             data["username"] = result[0][2]
             data["userid"] = result[0][0]
+            data["user_type"] = result[0][3]
             return data
         else:
             data["status"] = "Wrong Email or Password!"
@@ -84,6 +85,28 @@ async def login(login: models.Login):
 # @app.get("/get_live_events_by_league_id")
 # def get_live_events_by_league_id():
 #     url = ''
+
+@app.get("/get_users")
+async def get_users():
+    cursor = db.cursor()
+
+    sql = "SELECT userid, username, email, status FROM users"
+    cursor.execute(sql)
+    data = []
+    result = cursor.fetchall()
+
+    for user in result:
+        data.append(
+            {
+                "userid" : user[0],
+                "username" : user[1],
+                "email" : user[2],
+                "user_type" : user[3] 
+            }
+        )
+
+    return data
+
 
 @app.post("/post_bet")
 async def post_bet(bet: models.Bet):
