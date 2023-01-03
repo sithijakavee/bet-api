@@ -7,6 +7,18 @@ class Register(BaseModel):
     password: str
     phoneNumber: str
 
+class CreateUser(BaseModel):
+    username: str
+    email: str
+    password: str
+    phoneNumber: str
+    userType: str
+
+class UpdateUser(BaseModel):
+    username: str
+    email: str
+    userType: str
+
 class Login(BaseModel):
     email: str
     password: str

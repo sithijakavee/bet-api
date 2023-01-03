@@ -48,9 +48,9 @@ async def register(register: models.Register):
 
         userid = str(userid)
 
-        sql = "INSERT INTO users (userid, username, email, password, phone_number) VALUES (%s, %s, %s, %s, %s)"
+        sql = "INSERT INTO users (userid, username, email, password, phone_number, status) VALUES (%s, %s, %s, %s, %s, %s)"
 
-        val = (userid, register.username, register.email, register.password, register.phoneNumber)
+        val = (userid, register.username, register.email, register.password, register.phoneNumber, "client")
         cursor.execute(sql, val)
 
         db.commit()
@@ -107,6 +107,35 @@ async def get_users():
 
     return data
 
+@app.post("/create_user")
+async def create_user(createUser: models.CreateUser):
+    cursor = db.cursor()
+
+    sql = "SELECT * FROM users WHERE email = %s"
+    val = (createUser.email,)
+    cursor.execute(sql, val)
+
+    result = cursor.fetchall()
+
+    if result:
+        return "Email already used! Please try again with different email"
+
+    else:
+        cursor = db.cursor()
+
+        userid = uuid.uuid1()
+
+        userid = str(userid)
+
+        sql = "INSERT INTO users (userid, username, email, password, phone_number, status) VALUES (%s, %s, %s, %s, %s, %s)"
+
+        val = (userid, createUser.username, createUser.email, createUser.password, createUser.phoneNumber, createUser.userType)
+        cursor.execute(sql, val)
+
+        db.commit()
+
+        return "success"
+
 
 @app.post("/post_bet")
 async def post_bet(bet: models.Bet):
@@ -123,3 +152,36 @@ async def post_bet(bet: models.Bet):
     db.commit()
 
     return "success"
+
+
+@app.delete("/delete_user")
+async def delete_user(userid: str):
+    cursor = db.cursor()
+
+    sql = "DELETE FROM users WHERE userid=%s"
+    val= (userid,)
+
+    cursor.execute(sql, val)
+
+    db.commit()
+
+    if cursor.rowcount > 0:
+        return "success"
+    else:
+        return "Something Went Wrong While Deleting the User"
+
+@app.put("/update_user")
+async def update_user(userid: str, updateUser : models.UpdateUser):
+    cursor = db.cursor()
+
+    sql = "UPDATE users SET username = %s, email = %s, status = %s WHERE userid = %s"
+    val = (updateUser.username, updateUser.email, updateUser.userType, userid)
+
+    cursor.execute(sql, val)
+
+    db.commit()
+
+    if cursor.rowcount > 0:
+        return "success"
+    else:
+        return "Failed to update user"
